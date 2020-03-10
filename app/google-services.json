@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "568782012826",
+    "firebase_url": "https://home-nursing-service-3e457.firebaseio.com",
+    "project_id": "home-nursing-service-3e457",
+    "storage_bucket": "home-nursing-service-3e457.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:568782012826:android:84dba0dcc550d0c99f3a23",
+        "android_client_info": {
+          "package_name": "com.example.homenursingservice"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "568782012826-k219jpe980d7dqojukv5heotcasfh7ir.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.homenursingservice",
+            "certificate_hash": "58c4eef464c06bfa734f12eb1e7115c8190f5a2e"
+          }
+        },
+        {
+          "client_id": "568782012826-ar9mthc6bid97acft7j1p100he80333t.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBRfDntLcy9P3SnQShmxv_eHEWnj84qWqg"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "568782012826-ar9mthc6bid97acft7j1p100he80333t.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

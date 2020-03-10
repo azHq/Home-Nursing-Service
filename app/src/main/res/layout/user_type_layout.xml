@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <LinearLayout
+        android:weightSum="5"
+        android:gravity="center"
+        android:layout_margin="10dp"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+        <de.hdodenhof.circleimageview.CircleImageView
+            android:id="@+id/user_icon"
+            android:src="@drawable/doctor"
+            android:layout_width="35dp"
+            android:layout_height="match_parent">
+        </de.hdodenhof.circleimageview.CircleImageView>
+        <TextView
+            android:id="@+id/user_type"
+            android:textColor="@color/dark_white"
+            android:gravity="left|center_vertical"
+            android:fontFamily="serif"
+            android:paddingLeft="55dp"
+            android:textSize="15sp"
+            android:layout_width="match_parent"
+            android:layout_height="40dp">
+        </TextView>
+        <View
+            android:background="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="1dp">
+        </View>
+    </LinearLayout>
+
+</LinearLayout>

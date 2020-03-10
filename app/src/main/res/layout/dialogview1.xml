@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:background="@color/dark_rinho"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:background="#61464545"
+        android:layout_height="100dp">
+
+        <TextView
+            android:id="@+id/title"
+            android:gravity="center"
+            android:padding="20dp"
+            android:textSize="22sp"
+            android:fontFamily="serif"
+            android:text="Invalid Verification Code"
+            android:textColor="@color/white"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+        </TextView>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/message"
+        android:text="Please Re-check Your Code"
+        android:gravity="center"
+        android:textSize="18sp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:padding="10dp"
+        android:textColor="@color/white"
+        android:layout_width="match_parent"
+        android:layout_height="160dp">
+    </TextView>
+
+    <LinearLayout
+        android:gravity="center"
+        android:weightSum="2"
+        android:orientation="horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="100dp">
+        <Button
+            android:id="@+id/cancel"
+            android:background="@drawable/verify_btn"
+            android:textColor="@color/white"
+            android:text="Cancel"
+            android:layout_width="0dp"
+            android:layout_weight=".8"
+            android:layout_height="48dp">
+        </Button>
+        <Button
+            android:id="@+id/ok"
+            android:background="@drawable/verify_btn"
+            android:text="OK"
+            android:textColor="@color/white"
+            android:layout_marginLeft="50dp"
+            android:layout_width="0dp"
+            android:layout_weight=".8"
+            android:layout_height="48dp">
+        </Button>
+    </LinearLayout>
+
+</LinearLayout>

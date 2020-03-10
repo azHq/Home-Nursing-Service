@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:weightSum="4"
+    android:orientation="vertical"
+    android:background="@drawable/rinho_back"
+    tools:context=".Verification_Code_Activity">
+
+    <LinearLayout
+        android:layout_weight="1.3"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <ImageView
+            android:src="@drawable/logo"
+            android:layout_width="140dp"
+            android:layout_height="140dp">
+        </ImageView>
+    </LinearLayout>
+
+    <TextView
+        android:textSize="17sp"
+        android:layout_marginTop="40dp"
+        android:text="We sent a verification code\n to your phone number"
+        android:textColor="@color/white"
+        android:textAlignment="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:layout_editor_absoluteX="0dp"
+        tools:layout_editor_absoluteY="86dp">
+    </TextView>
+
+    <LinearLayout
+        android:layout_weight=".8"
+        android:weightSum="6"
+        android:orientation="vertical"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:layout_gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="0dp">
+        <com.goodiebag.pinview.Pinview
+            android:id="@+id/pinview"
+            app:pinBackground="@drawable/pin_back"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:pinWidth="40dp"
+            app:pinHeight="40dp"
+            app:pinLength="6"
+            app:textSize="6sp"
+            app:cursorVisible="true"
+            app:hint="0"
+            app:inputType="number"
+            app:password="false"/>
+        <TextView
+            android:gravity="end"
+            android:paddingRight="8dp"
+            android:textColor="@color/white"
+            android:text="Didn't get any code? Resend Code"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TextView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:gravity="center"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <Button
+            android:text="Verify"
+            android:onClick="verify"
+            android:textColor="@color/white"
+            android:background="@drawable/verify_btn"
+            android:layout_width="120dp"
+            android:layout_height="48dp">
+        </Button>
+    </LinearLayout>
+
+
+
+</LinearLayout>

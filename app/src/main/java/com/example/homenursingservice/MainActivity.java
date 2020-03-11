@@ -53,126 +53,16 @@ public class MainActivity extends AppCompatActivity {
         firebaseAuth=FirebaseAuth.getInstance();
         firebaseUser=firebaseAuth.getCurrentUser();
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(MainActivity.this);
-        getLocationPermission();
         if(firebaseUser!=null){
 
             startActivity(new Intent(getApplicationContext(), User_Dashboard.class));
+            finish();
         }
         else {
 
             startActivity(new Intent(getApplicationContext(),User_Login.class));
+            finish();
         }
 
     }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
-        Log.d(TAG, "onRequestPermissionsResult: called.");
-
-        switch(requestCode){
-            case LOCATION_PERMISSION_REQUEST_CODE:{
-                if(grantResults.length > 0){
-                    for(int i = 0; i < grantResults.length; i++){
-                        if(grantResults[i] != PackageManager.PERMISSION_GRANTED){
-                            Log.d(TAG, "onRequestPermissionsResult: permission failed");
-                            return;
-                        }
-                    }
-                    Log.d(TAG, "onRequestPermissionsResult: permission granted");
-                    //initialize our map
-                    getDeviceLocation();
-                }
-            }
-        }
-    }
-    private void getLocationPermission(){
-        Log.d(TAG, "getLocationPermission: getting location permissions");
-        String[] permissions = {Manifest.permission.ACCESS_FINE_LOCATION,
-                Manifest.permission.ACCESS_COARSE_LOCATION};
-
-        if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                FINE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-            if(ContextCompat.checkSelfPermission(this.getApplicationContext(),
-                    COURSE_LOCATION) == PackageManager.PERMISSION_GRANTED){
-                getDeviceLocation();
-            }else{
-                ActivityCompat.requestPermissions(this,
-                        permissions,
-                        LOCATION_PERMISSION_REQUEST_CODE);
-            }
-        }else{
-            ActivityCompat.requestPermissions(this,
-                    permissions,
-                    LOCATION_PERMISSION_REQUEST_CODE);
-        }
-    }
-
-    public void upload_location(GeoPoint geoPoint){
-
-        if(db!=null&&firebaseUser!=null){
-
-            Map<String,GeoPoint> map=new HashMap<>();
-            map.put("loaction",geoPoint);
-            db.collection("clients").document(firebaseUser.getUid()).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
-                @Override
-                public void onSuccess(Void aVoid) {
-
-
-                }
-            }).addOnFailureListener(new OnFailureListener() {
-                @Override
-                public void onFailure(@NonNull Exception e) {
-
-                    Toast.makeText(getApplicationContext(),e.toString(),Toast.LENGTH_LONG).show();
-                }
-            });
-        }
-
-    }
-
-    @SuppressLint("MissingPermission")
-    private void getDeviceLocation() {
-
-
-        mFusedLocationProviderClient.getLastLocation()
-                .addOnCompleteListener(new OnCompleteListener<Location>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Location> task) {
-                        if (task.isSuccessful()) {
-
-
-                            mLastKnownLocation = task.getResult();
-
-                            if (mLastKnownLocation != null) {
-
-                                GeoPoint geoPoint=new GeoPoint(mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude());
-                                upload_location(geoPoint);
-                            } else {
-                                final LocationRequest locationRequest = LocationRequest.create();
-                                locationRequest.setInterval(10000);
-                                locationRequest.setFastestInterval(5000);
-                                locationRequest.setPriority(LocationRequest.PRIORITY_HIGH_ACCURACY);
-                                locationCallback = new LocationCallback() {
-                                    @Override
-                                    public void onLocationResult(LocationResult locationResult) {
-                                        super.onLocationResult(locationResult);
-                                        if (locationResult == null) {
-                                            return;
-                                        }
-                                        mLastKnownLocation = locationResult.getLastLocation();
-                                        GeoPoint geoPoint=new GeoPoint(mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude());
-                                        upload_location(geoPoint);
-                                        mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
-                                    }
-                                };
-                                mFusedLocationProviderClient.requestLocationUpdates(locationRequest, locationCallback, null);
-
-                            }
-                        } else {
-                            Toast.makeText(MainActivity.this, "unable to get last location", Toast.LENGTH_SHORT).show();
-                        }
-                    }
-                });
-    }
-
 }

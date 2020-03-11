@@ -28,6 +28,7 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 
@@ -44,6 +45,7 @@ public class Verification_Code_Activity extends AppCompatActivity {
     AlertDialog alertDialog;
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
+    GeoPoint geoPoint=new GeoPoint(0,0);
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,7 +164,7 @@ public class Verification_Code_Activity extends AppCompatActivity {
 
     public void upload_user_data(){
 
-        User user=new User(user_id,user_name,user_type,phone_number,image_path,device_id);
+        User user=new User(user_id,user_name,user_type,phone_number,image_path,device_id,geoPoint);
         SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
         FirebaseFirestore db=FirebaseFirestore.getInstance();
         if(user_type.equalsIgnoreCase("Patient")){

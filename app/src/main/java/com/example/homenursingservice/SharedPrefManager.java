@@ -13,6 +13,7 @@ public class SharedPrefManager {
     private static final String PHONE_NUMBER= "PHONE_NUMBER";
     private static final String IMAGE_PATH= "IMAGE_PATH";
     private static final String DEVICE_ID="DEVICE_ID";
+    private static final String GEOPOINT="GEOPOINT";
 
 
     private static SharedPrefManager mInstance;

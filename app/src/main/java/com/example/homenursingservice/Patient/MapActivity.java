@@ -22,8 +22,11 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.example.homenursingservice.ClusterMarker;
 import com.example.homenursingservice.MainActivity;
+import com.example.homenursingservice.MyClusterManagerRenderer;
 import com.example.homenursingservice.R;
+import com.example.homenursingservice.User;
 import com.google.android.gms.common.api.ApiException;
 import com.google.android.gms.common.api.ResolvableApiException;
 import com.google.android.gms.common.api.Status;
@@ -40,6 +43,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -56,6 +60,12 @@ import com.google.android.libraries.places.api.net.FindAutocompletePredictionsRe
 import com.google.android.libraries.places.api.net.PlacesClient;
 import com.google.android.libraries.places.widget.AutocompleteSupportFragment;
 import com.google.android.libraries.places.widget.listener.PlaceSelectionListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.maps.android.clustering.ClusterManager;
 import com.mancj.materialsearchbar.MaterialSearchBar;
 import com.mancj.materialsearchbar.adapter.SuggestionsAdapter;
 import com.skyfishjy.library.RippleBackground;
@@ -66,6 +76,10 @@ import java.util.List;
 
 public class MapActivity extends FragmentActivity implements OnMapReadyCallback {
 
+
+    private ClusterManager<ClusterMarker> mClusterManager;
+    private MyClusterManagerRenderer mClusterManagerRenderer;
+    private ArrayList<ClusterMarker> mClusterMarkers = new ArrayList<>();
     private GoogleMap mMap;
     private FusedLocationProviderClient mFusedLocationProviderClient;
     private PlacesClient placesClient;
@@ -86,6 +100,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     private static final String COURSE_LOCATION = Manifest.permission.ACCESS_COARSE_LOCATION;
     private static final int LOCATION_PERMISSION_REQUEST_CODE = 1234;
     private Boolean mLocationPermissionsGranted = false;
+    FirebaseFirestore db = FirebaseFirestore.getInstance();
+    ArrayList<User> all_users_data=new ArrayList<>();
+    GeoPoint geoPoint=new GeoPoint(23,78);
+    private LatLngBounds mMapBoundary;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -95,21 +114,43 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
 
-        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
-        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
+//        autocompleteFragment.setOnPlaceSelectedListener(new PlaceSelectionListener() {
+//            @Override
+//            public void onPlaceSelected(Place place) {
+//
+//                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
+//            }
+//
+//            @Override
+//            public void onError(Status status) {
+//
+//                Log.i(TAG, "An error occurred: " + status);
+//            }
+//        });
+
+        get_all_user_data();
+        getLocationPermission();
+    }
+
+    public void get_all_user_data(){
+
+        db.collection("Pending_Doctor").get().addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
             @Override
-            public void onPlaceSelected(Place place) {
+            public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
 
-                Log.i(TAG, "Place: " + place.getName() + ", " + place.getId());
-            }
+                for(QueryDocumentSnapshot queryDocumentSnapshot:queryDocumentSnapshots){
 
-            @Override
-            public void onError(Status status) {
+                    User user=queryDocumentSnapshot.toObject(User.class);
+                    all_users_data.add(user);
+                    System.out.println("User Name"+user.user_name);
+                }
+                addMapMarkers();
 
-                Log.i(TAG, "An error occurred: " + status);
             }
         });
-        getLocationPermission();
+
+
     }
 
     public void init_map(){
@@ -399,6 +440,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                             mLastKnownLocation = task.getResult();
 
                             if (mLastKnownLocation != null) {
+                                geoPoint=new GeoPoint(mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude());
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             } else {
                                 final LocationRequest locationRequest = LocationRequest.create();
@@ -413,6 +455,7 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                                             return;
                                         }
                                         mLastKnownLocation = locationResult.getLastLocation();
+                                        geoPoint=new GeoPoint(mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude());
                                         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                                         mFusedLocationProviderClient.removeLocationUpdates(locationCallback);
                                     }
@@ -423,8 +466,77 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                         } else {
                             Toast.makeText(MapActivity.this, "unable to get last location", Toast.LENGTH_SHORT).show();
                         }
+
                     }
                 });
     }
+
+    private void addMapMarkers(){
+
+
+        if(mMap != null){
+
+            if(mClusterManager == null){
+                mClusterManager = new ClusterManager<ClusterMarker>(getApplicationContext().getApplicationContext(), mMap);
+            }
+            if(mClusterManagerRenderer == null){
+                mClusterManagerRenderer = new MyClusterManagerRenderer(
+                        getApplicationContext(),
+                        mMap,
+                        mClusterManager
+                );
+                mClusterManager.setRenderer(mClusterManagerRenderer);
+            }
+
+            Toast.makeText(getApplicationContext(),"i ma Claled",Toast.LENGTH_LONG).show();
+            for(User userLocation:all_users_data){
+                Toast.makeText(getApplicationContext(),"i ma Claled",Toast.LENGTH_LONG).show();
+                Log.d(TAG, "addMapMarkers: location: " + userLocation.geoPoint);
+                try{
+
+                    String snippet = "Determine route to " + userLocation.getUser_name() + "?";
+                    int avatar = R.drawable.doctor; // set the default avatar
+                    ClusterMarker newClusterMarker = new ClusterMarker(
+                            new LatLng(userLocation.geoPoint.getLatitude(), userLocation.geoPoint.getLongitude()),
+                            userLocation.getUser_name(),
+                            snippet,
+                            avatar,
+                            userLocation
+                    );
+
+                    mClusterManager.addItem(newClusterMarker);
+                    mClusterMarkers.add(newClusterMarker);
+
+                    geoPoint=new GeoPoint(userLocation.geoPoint.getLatitude(),userLocation.geoPoint.getLongitude());
+                    setCameraView();
+
+                }catch (NullPointerException e){
+                    Log.e(TAG, "addMapMarkers: NullPointerException: " + e.getMessage() );
+                }
+
+            }
+            mClusterManager.cluster();
+
+           // setCameraView();
+        }
+    }
+
+    private void setCameraView() {
+
+        // Set a boundary to start
+        double bottomBoundary = geoPoint.getLatitude() - .1;
+        double leftBoundary = geoPoint.getLongitude() - .1;
+        double topBoundary = geoPoint.getLatitude() + .1;
+        double rightBoundary = geoPoint.getLongitude() + .1;
+
+        mMapBoundary = new LatLngBounds(
+                new LatLng(bottomBoundary, leftBoundary),
+                new LatLng(topBoundary, rightBoundary)
+        );
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
+    }
+
+
 
 }

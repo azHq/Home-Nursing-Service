@@ -1,5 +1,7 @@
 package com.example.homenursingservice;
 
+import com.google.firebase.firestore.GeoPoint;
+
 public class User {
 
     public String user_id;
@@ -8,16 +10,20 @@ public class User {
     public String phone_number;
     public String image_path;
     public String device_id;
+    public GeoPoint geoPoint;
     public String getDevice_id() {
         return device_id;
     }
+
 
     public void setDevice_id(String device_id) {
         this.device_id = device_id;
     }
 
 
+    public User(){
 
+    }
     public User(String user_id, String user_name, String user_type, String phone_number, String image_path,String device_id) {
         this.user_id = user_id;
         this.user_name = user_name;
@@ -25,6 +31,16 @@ public class User {
         this.phone_number = phone_number;
         this.image_path = image_path;
         this.device_id=device_id;
+        this.geoPoint=geoPoint;
+    }
+    public User(String user_id, String user_name, String user_type, String phone_number, String image_path,String device_id, GeoPoint geoPoint) {
+        this.user_id = user_id;
+        this.user_name = user_name;
+        this.user_type = user_type;
+        this.phone_number = phone_number;
+        this.image_path = image_path;
+        this.device_id=device_id;
+        this.geoPoint=geoPoint;
     }
 
     public String getUser_id() {
@@ -65,5 +81,13 @@ public class User {
 
     public void setImage_path(String image_path) {
         this.image_path = image_path;
+    }
+
+    public GeoPoint getGeoPoint() {
+        return geoPoint;
+    }
+
+    public void setGeoPoint(GeoPoint geoPoint) {
+        this.geoPoint = geoPoint;
     }
 }

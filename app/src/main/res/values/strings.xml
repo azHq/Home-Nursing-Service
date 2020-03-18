@@ -3,6 +3,6 @@
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="hello_blank_fragment">Hello blank fragment</string>
-    <string name="google_map_api_key">AIzaSyDmd20jv9Kfa5XwBi_1uA-Se07hfPty5Ks</string>
+    <string name="google_map_api_key"></string>
 
 </resources>

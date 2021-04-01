@@ -14,11 +14,22 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
+        <activity android:name=".Patient.ServiceDetails"></activity>
         <activity
+            android:name=".Patient.BookServiceForm"
+            android:label="Book Service"
             android:screenOrientation="portrait"
-            android:theme="@style/Login_Theme"
-            android:name=".Verification_Code_Activity"></activity>
-
+            android:theme="@style/home_with_actionbar"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name=".Doctor.DoctorDashboard"
+            android:screenOrientation="portrait"
+            android:theme="@style/home" />
+        <activity android:name=".Test" />
+        <activity
+            android:name=".Verification_Code_Activity"
+            android:screenOrientation="portrait"
+            android:theme="@style/Login_Theme" />
         <activity android:name=".Patient.MapActivity" />
         <activity
             android:name=".Patient.User_Dashboard"
@@ -28,13 +39,16 @@
             android:name=".User_Login"
             android:screenOrientation="portrait"
             android:theme="@style/Login_Theme" />
-        <activity android:name=".MainActivity">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/fullscreen">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+
         <meta-data
             android:name="com.google.android.geo.API_KEY"
             android:value="@string/google_map_api_key" />

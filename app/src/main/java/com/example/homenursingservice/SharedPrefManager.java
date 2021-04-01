@@ -14,6 +14,9 @@ public class SharedPrefManager {
     private static final String IMAGE_PATH= "IMAGE_PATH";
     private static final String DEVICE_ID="DEVICE_ID";
     private static final String GEOPOINT="GEOPOINT";
+    private static final String ONLINE_STATUS="ONLINE_STATUS";
+    private static final String ACCOUNT_STATUS="ACCOUNT_STATUS";
+    private static final String NOTIFICATION="NOTIFICATION";
 
 
     private static SharedPrefManager mInstance;
@@ -40,6 +43,9 @@ public class SharedPrefManager {
         editor.putString(PHONE_NUMBER, user.getPhone_number());
         editor.putString(IMAGE_PATH, user.getImage_path());
         editor.putString(DEVICE_ID, user.getDevice_id());
+        editor.putString(ACCOUNT_STATUS, user.account_status);
+        editor.putString(ONLINE_STATUS, user.online_status);
+        editor.putBoolean(NOTIFICATION, user.notification);
         editor.apply();
     }
 
@@ -60,7 +66,10 @@ public class SharedPrefManager {
                 sharedPreferences.getString(USER_TYPE, null),
                 sharedPreferences.getString(PHONE_NUMBER, null),
                 sharedPreferences.getString(IMAGE_PATH,null),
-                sharedPreferences.getString(DEVICE_ID,null)
+                sharedPreferences.getString(DEVICE_ID,null),
+                sharedPreferences.getString(ACCOUNT_STATUS,null),
+                sharedPreferences.getString(ONLINE_STATUS,null),
+                sharedPreferences.getBoolean(NOTIFICATION, true)
         );
     }
 

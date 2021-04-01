@@ -1,0 +1,331 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/black1"
+    tools:context=".Patient.User_Dashboard">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:theme="@style/home">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/home">
+            <ImageView
+                android:id="@+id/menu"
+                android:src="@drawable/menu"
+                android:layout_width="22dp"
+                android:layout_height="25dp">
+            </ImageView>
+            <TextView
+                android:text="Home"
+                android:fontFamily="sans-serif"
+                android:textStyle="bold"
+                android:textColor="#D7F2A8"
+                android:gravity="center"
+                android:textSize="18sp"
+                android:layout_marginStart="30dp"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent">
+            </TextView>
+
+            <LinearLayout
+                android:gravity="end|center_vertical"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:src="@drawable/search"
+                    android:layout_width="25dp"
+                    android:layout_margin="10dp"
+                    android:layout_height="25dp">
+
+                </ImageView>
+                <RelativeLayout
+                    android:layout_margin="5dp"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp">
+                    <ImageView
+                        android:src="@drawable/notifications"
+                        android:layout_width="30dp"
+                        android:layout_height="30dp">
+                    </ImageView>
+                    <TextView
+                        android:id="@+id/message_unseen"
+                        android:text="99"
+                        android:visibility="gone"
+                        android:gravity="center"
+                        android:textSize="10sp"
+                        android:textColor="@color/white"
+                        android:background="@drawable/red_circle"
+                        android:layout_alignParentTop="true"
+                        android:layout_alignParentEnd="true"
+                        android:layout_width="16dp"
+                        android:layout_height="16dp">
+                    </TextView>
+                </RelativeLayout>
+                <ImageView
+                    android:id="@+id/menu_icon2"
+                    android:src="@drawable/menu2"
+                    android:layout_width="22dp"
+                    android:layout_margin="5dp"
+                    android:layout_height="25dp">
+
+                </ImageView>
+            </LinearLayout>
+
+        </androidx.appcompat.widget.Toolbar>
+
+    </com.google.android.material.appbar.AppBarLayout>
+
+
+    <androidx.drawerlayout.widget.DrawerLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        xmlns:tools="http://schemas.android.com/tools"
+        android:id="@+id/drawer_layout"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        tools:openDrawer="start">
+
+        <FrameLayout
+            android:id="@+id/frame_layout"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+            <include
+                layout="@layout/fragment_doctor_dashboard">
+            </include>
+        </FrameLayout>
+
+        <com.google.android.material.navigation.NavigationView
+            android:id="@+id/nav_view"
+            android:layout_width="230dp"
+            android:layout_height="match_parent"
+            android:layout_gravity="start"
+            android:background="@color/rinho"
+            app:itemIconTint="@color/colorPrimaryDark"
+            app:itemTextColor="@color/black1"
+            android:fitsSystemWindows="true">
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <LinearLayout
+                    android:orientation="vertical"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                    <LinearLayout
+                        android:orientation="vertical"
+                        android:padding="15dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="150dp">
+                        <de.hdodenhof.circleimageview.CircleImageView
+                            android:src="@drawable/doctor"
+                            android:layout_width="match_parent"
+                            android:layout_height="100dp">
+                        </de.hdodenhof.circleimageview.CircleImageView>
+                        <TextView
+                            android:id="@+id/user_name"
+                            android:text="User Name"
+                            android:textSize="14sp"
+                            android:gravity="center"
+                            android:textColor="@color/white"
+                            android:layout_width="match_parent"
+                            android:layout_height="30dp">
+                        </TextView>
+                    </LinearLayout>
+                    <View
+                        android:background="#6F918989"
+                        android:layout_width="match_parent"
+                        android:layout_height="@dimen/half_dp">
+                    </View>
+                    <LinearLayout
+                        android:layout_margin="10dp"
+                        android:orientation="vertical"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+
+                        <LinearLayout
+                            android:id="@+id/profile"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:src="@drawable/baby_care"
+                                android:layout_width="40dp"
+                                android:layout_margin="10dp"
+                                android:layout_height="40dp">
+                            </ImageView>
+
+                            <TextView
+                                android:text="Profile"
+                                android:fontFamily="serif"
+                                android:textColor="@color/white"
+                                android:textSize="18sp"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_height="40dp">
+                            </TextView>
+
+                        </LinearLayout>
+                        <View
+                            android:background="#6F918989"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/half_dp">
+                        </View>
+                        <LinearLayout
+                            android:id="@+id/home_task"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:src="@drawable/injection"
+                                android:layout_width="40dp"
+                                android:layout_margin="10dp"
+                                android:layout_height="40dp">
+                            </ImageView>
+
+                            <TextView
+                                android:textColor="@color/white"
+                                android:text="Injection"
+                                android:textSize="18sp"
+                                android:fontFamily="serif"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_height="40dp">
+                            </TextView>
+
+                        </LinearLayout>
+                        <View
+                            android:background="#6F918989"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/half_dp">
+                        </View>
+                        <LinearLayout
+                            android:id="@+id/my_classes"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:src="@drawable/insuline2"
+                                android:layout_width="40dp"
+                                android:layout_margin="10dp"
+                                android:layout_height="40dp">
+                            </ImageView>
+
+                            <TextView
+                                android:textColor="@color/white"
+                                android:text="Insuline"
+                                android:textSize="18sp"
+                                android:fontFamily="serif"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_height="40dp">
+                            </TextView>
+
+                        </LinearLayout>
+                        <View
+                            android:background="#6F918989"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/half_dp">
+                        </View>
+                        <LinearLayout
+                            android:id="@+id/result"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:src="@drawable/lactation"
+                                android:layout_width="40dp"
+                                android:layout_margin="10dp"
+                                android:layout_height="40dp">
+                            </ImageView>
+
+                            <TextView
+                                android:textColor="@color/white"
+                                android:text="Lactation"
+                                android:textSize="18sp"
+                                android:fontFamily="serif"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_height="40dp">
+                            </TextView>
+
+                        </LinearLayout>
+                        <View
+                            android:background="#6F918989"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/half_dp">
+                        </View>
+                        <LinearLayout
+                            android:id="@+id/teachers"
+                            android:layout_marginLeft="10dp"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <ImageView
+                                android:src="@drawable/insuline2"
+                                android:layout_width="40dp"
+                                android:layout_margin="10dp"
+                                android:layout_height="40dp">
+                            </ImageView>
+
+                            <TextView
+                                android:fontFamily="serif"
+                                android:textColor="@color/white"
+                                android:text="Insuline"
+                                android:textSize="18sp"
+                                android:layout_marginLeft="10dp"
+                                android:gravity="center"
+                                android:layout_width="wrap_content"
+                                android:layout_marginTop="10dp"
+                                android:layout_height="40dp">
+                            </TextView>
+
+                        </LinearLayout>
+                        <View
+                            android:background="#6F918989"
+                            android:layout_width="match_parent"
+                            android:layout_height="@dimen/half_dp">
+                        </View>
+                    </LinearLayout>
+                </LinearLayout>
+
+            </ScrollView>
+
+
+
+
+        </com.google.android.material.navigation.NavigationView>
+
+    </androidx.drawerlayout.widget.DrawerLayout>
+
+
+
+
+</LinearLayout>

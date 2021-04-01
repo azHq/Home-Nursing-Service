@@ -28,6 +28,15 @@
         <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
         <item name="android:actionOverflowButtonStyle">@style/overflow</item>
     </style>
+    <style name="home_with_actionbar" parent="Theme.AppCompat.DayNight.DarkActionBar">
+        <item name="colorPrimaryDark">@color/black1</item>
+        <item name="colorPrimary">@color/gray1</item>
+        <item name="colorAccent">@color/dark_white</item>
+        <item name="android:textColorPrimary">@color/white</item>
+        <item name="popupMenuStyle">@style/menu_style</item>
+        <item name="android:dropDownListViewStyle">@style/PopupMenuListView</item>
+        <item name="android:actionOverflowButtonStyle">@style/overflow</item>
+    </style>
     <style name="overflow" parent="android:Widget.ActionButton.Overflow">
         <item name="android:height">10dp</item>
         <item name="android:width">10dp</item>
@@ -55,5 +64,12 @@
         <item name="android:padding">0dp</item>
         <item name="android:dropDownListViewStyle">@style/Spinner_Style</item>
     </style>
+    <style name="fullscreen" parent="@style/Theme.AppCompat.Light">
+        <item name="windowNoTitle">true</item>
+        <item name="windowActionBar">false</item>
+        <item name="android:windowFullscreen">true</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+
 
 </resources>

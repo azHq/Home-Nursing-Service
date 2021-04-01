@@ -57,6 +57,7 @@
             app:inputType="number"
             app:password="false"/>
         <TextView
+            android:id="@+id/resend"
             android:gravity="end"
             android:paddingRight="8dp"
             android:textColor="@color/white"

@@ -23,13 +23,6 @@
         app:rb_rippleAmount="4"
         app:rb_duration="3000"
         app:rb_scale="6">
-
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:translationY="-18dp"
-            android:src="@drawable/ic_placeholder"/>
     </com.skyfishjy.library.RippleBackground>
     <com.mancj.materialsearchbar.MaterialSearchBar
         style="@style/MaterialSearchBarLight"
@@ -45,15 +38,94 @@
         android:outlineProvider="bounds"
         app:mt_placeholder="Search a place"/>
 
-    <Button
-        android:id="@+id/btn_find"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:text="Find Restaurants"
-        android:textColor="#FFFFFF"
-        android:background="@color/colorPrimary"
-        android:layout_margin="16dp"
-        android:textStyle="bold"/>
+
+        <LinearLayout
+            android:weightSum="3"
+            android:orientation="vertical"
+            android:background="@drawable/back1"
+            android:layout_alignParentBottom="true"
+            android:layout_width="match_parent"
+            android:layout_height="140dp">
+
+            <TextView
+                android:id="@+id/location_head"
+                android:textSize="22sp"
+                android:gravity="center"
+                android:textColor="#DDFFFEFE"
+                android:text="Your Request Loaction"
+                android:layout_weight="1"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+            </TextView>
+            <LinearLayout
+                android:layout_weight="1"
+                android:weightSum="4"
+                android:layout_marginBottom="5dp"
+                android:gravity="center"
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+                <ImageView
+                    android:background="@drawable/marker2"
+                    android:layout_width="40dp"
+                    android:layout_height="match_parent">
+                </ImageView>
+                <TextView
+                    android:textSize="20sp"
+                    android:gravity="center"
+                    android:layout_marginLeft="10dp"
+                    android:text="Mohakhali DOHS"
+                    android:textColor="#AACCFF"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent">
+
+                </TextView>
+            </LinearLayout>
+            <LinearLayout
+                android:layout_weight="1"
+                android:orientation="horizontal"
+                android:weightSum="2"
+                android:layout_width="match_parent"
+                android:layout_height="0dp">
+
+                <LinearLayout
+                    android:layout_weight="1"
+                    android:gravity="center"
+                    android:background="#01742E"
+                    android:orientation="horizontal"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <TextView
+                        android:id="@+id/cost"
+                        android:layout_width="wrap_content"
+                        android:layout_height="match_parent"
+                        android:gravity="center"
+                        android:text="Minimum Cost 90"
+                        android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                        android:textColor="#ffffff"></TextView>
+                    <ImageView
+                        android:src="@drawable/tk"
+                        android:layout_width="20dp"
+                        android:layout_marginLeft="5dp"
+                        android:layout_height="20dp">
+                    </ImageView>
+
+                </LinearLayout>
+                <Button
+                    android:id="@+id/send_request"
+                    android:layout_weight="1"
+                    android:textColor="#ffffff"
+                    android:text="Send Request"
+                    android:background="#55268F"
+                    android:textAppearance="@style/TextAppearance.AppCompat.Body1"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+                </Button>
+            </LinearLayout>
+
+
+
+        </LinearLayout>
 
 </RelativeLayout>

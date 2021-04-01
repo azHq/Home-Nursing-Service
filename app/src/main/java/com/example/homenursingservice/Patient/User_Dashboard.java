@@ -1,10 +1,9 @@
 package com.example.homenursingservice.Patient;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.view.menu.MenuBuilder;
-import androidx.appcompat.view.menu.MenuPopupHelper;
 import androidx.appcompat.widget.PopupMenu;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.app.ActivityCompat;
@@ -22,28 +21,25 @@ import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import com.example.homenursingservice.ClusterMarker;
-import com.example.homenursingservice.MainActivity;
-import com.example.homenursingservice.MyClusterManagerRenderer;
-import com.example.homenursingservice.Patient.Dashboard;
+import com.example.homenursingservice.CustomAlertDialog;
+import com.example.homenursingservice.Doctor.DoctorProfile;
 import com.example.homenursingservice.R;
 import com.example.homenursingservice.SharedPrefManager;
-import com.example.homenursingservice.User;
 import com.example.homenursingservice.User_Login;
 import com.google.android.gms.location.FusedLocationProviderClient;
 import com.google.android.gms.location.LocationCallback;
 import com.google.android.gms.location.LocationRequest;
 import com.google.android.gms.location.LocationResult;
 import com.google.android.gms.location.LocationServices;
-import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -53,9 +49,6 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
-import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
-import com.google.maps.android.clustering.ClusterManager;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
@@ -84,13 +77,20 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
     Button vaccine;
+    TextView user_name;
+    int fragment_number=1;
+    public static TextView message_unseen;
+    ActionBar actionBar;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_dashboard);
-
+        actionBar=getSupportActionBar();
         menu=findViewById(R.id.menu);
         menu2=findViewById(R.id.menu_icon2);
+        user_name=findViewById(R.id.user_name);
+        message_unseen=findViewById(R.id.message_unseen);
+        user_name.setText(SharedPrefManager.getInstance(getApplicationContext()).getUser().user_name);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(User_Dashboard.this);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
         menu.setOnClickListener(new View.OnClickListener() {
@@ -123,7 +123,40 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
             }
         });
         getLocationPermission();
+        LinearLayout profile=findViewById(R.id.profile);
+        profile.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                changeFragmentView(new PatientProfile());
+
+            }
+        });
+        LinearLayout dashboard=findViewById(R.id.dashboard);
+        dashboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+
+                fragmentManager =getSupportFragmentManager();
+                fragmentManager.popBackStack();
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
+        LinearLayout service_list=findViewById(R.id.requested_service_list);
+        service_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(actionBar!=null) actionBar.setTitle("All Requests");
+                changeFragmentView(new RequestedServiceList());
+            }
+        });
+
+
+
+    }
+    public void BookService(View view){
+        Intent tnt=new Intent(getApplicationContext(),BookServiceForm.class);
+        startActivity(tnt);
     }
     public void changeFragmentView(Fragment fragment){
 
@@ -230,9 +263,13 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
 
         if(db!=null&&firebaseUser!=null){
 
-            Map<String,GeoPoint> map=new HashMap<>();
-            map.put("loaction",geoPoint);
-            db.collection("clients").document(firebaseUser.getUid()).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            Map<String,Object> map=new HashMap<>();
+            map.put("location",geoPoint);
+            String user_collection="AllDoctors";
+            if(SharedPrefManager.getInstance(getApplicationContext()).getUser().user_type.equalsIgnoreCase("patient")){
+                user_collection="AllUsers";
+            }
+            db.collection(user_collection).document(firebaseUser.getUid()).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -297,7 +334,22 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
         }
 
     }
+    @Override
+    public void onBackPressed() {
 
+        int count = fragmentManager.getBackStackEntryCount();
+        if (drawer.isDrawerOpen(GravityCompat.START)) {
+            drawer.closeDrawer(GravityCompat.START);
+        }
+        else if(count==1){
+
+            CustomAlertDialog.getInstance().show_exit_dialog(User_Dashboard.this);
+        }
+        else {
+
+            super.onBackPressed();
+        }
+    }
 
 
 }

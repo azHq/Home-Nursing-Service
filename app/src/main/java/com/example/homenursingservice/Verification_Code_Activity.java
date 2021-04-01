@@ -11,8 +11,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.homenursingservice.Doctor.DoctorDashboard;
 import com.example.homenursingservice.Patient.User_Dashboard;
 import com.goodiebag.pinview.Pinview;
 import com.google.android.gms.tasks.OnCompleteListener;
@@ -27,6 +29,7 @@ import com.google.firebase.auth.FirebaseAuthInvalidCredentialsException;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.PhoneAuthCredential;
 import com.google.firebase.auth.PhoneAuthProvider;
+import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -46,6 +49,7 @@ public class Verification_Code_Activity extends AppCompatActivity {
     FirebaseAuth firebaseAuth;
     ProgressDialog progressDialog;
     GeoPoint geoPoint=new GeoPoint(0,0);
+    TextView resend;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -55,6 +59,7 @@ public class Verification_Code_Activity extends AppCompatActivity {
         user_type=getIntent().getStringExtra("user_type");
         phone_number="+88"+getIntent().getStringExtra("phone_number");
         pinview = (Pinview) findViewById(R.id.pinview);
+        resend=findViewById(R.id.resend);
         progressDialog=new ProgressDialog(Verification_Code_Activity.this);
         progressDialog.setMessage("Please Wait...");
         pinview.setPinViewEventListener(new Pinview.PinViewEventListener() {
@@ -65,6 +70,12 @@ public class Verification_Code_Activity extends AppCompatActivity {
                     verification_code=pinview.getValue();
 
 
+            }
+        });
+        resend.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                resendVerificationCode(phone_number,mResendToken);
             }
         });
 
@@ -106,6 +117,16 @@ public class Verification_Code_Activity extends AppCompatActivity {
         send_code(mCallbacks,phone_number);
 
     }
+    private void resendVerificationCode(String phoneNumber,
+                                        PhoneAuthProvider.ForceResendingToken token) {
+        PhoneAuthProvider.getInstance().verifyPhoneNumber(
+                phoneNumber,        // Phone number to verify
+                60,                 // Timeout duration
+                TimeUnit.SECONDS,   // Unit of timeout
+                this,               // Activity (for callback binding)
+                mCallbacks,         // OnVerificationStateChangedCallbacks
+                token);             // ForceResendingToken from callbacks
+    }
 
     public void verify(View view)
     {
@@ -113,8 +134,14 @@ public class Verification_Code_Activity extends AppCompatActivity {
         if(pinview.getValue().length()==6) {
 
             progressDialog.show();
-            PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verification_code);
-            signInWithPhoneAuthCredential(credential);
+            if(mVerificationId!=null&&mVerificationId.length()>0){
+                PhoneAuthCredential credential = PhoneAuthProvider.getCredential(mVerificationId, verification_code);
+                signInWithPhoneAuthCredential(credential);
+            }
+            else{
+                Toast.makeText(getApplicationContext(),"Please wait for code send",Toast.LENGTH_LONG).show();
+            }
+
         }
         else {
 
@@ -164,11 +191,16 @@ public class Verification_Code_Activity extends AppCompatActivity {
 
     public void upload_user_data(){
 
-        User user=new User(user_id,user_name,user_type,phone_number,image_path,device_id,geoPoint);
+        String account_status="approved";
+        if(user_type.equals(Constants.user2)){
+            account_status="pending";
+        }
+        User user=new User(user_id,user_name,user_type,phone_number,image_path,device_id,geoPoint,"active","true",true);
+        user.create_at= FieldValue.serverTimestamp();
         SharedPrefManager.getInstance(getApplicationContext()).userLogin(user);
         FirebaseFirestore db=FirebaseFirestore.getInstance();
         if(user_type.equalsIgnoreCase("Patient")){
-            db.collection("User").document(user_id).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+            db.collection("AllUsers").document(user_id).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -188,12 +220,12 @@ public class Verification_Code_Activity extends AppCompatActivity {
         }
         else {
 
-            db.collection("Pending_Doctor").document(user_id).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
+            db.collection("AllDoctors").document(user_id).set(user).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
                     progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(),"Log In Successfully",Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(getApplicationContext(), User_Dashboard.class));
+                    startActivity(new Intent(getApplicationContext(), DoctorDashboard.class));
                     finish();
                 }
             }).addOnFailureListener(new OnFailureListener() {

@@ -10,6 +10,7 @@ import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.content.IntentSender;
 import android.content.pm.PackageManager;
+import android.graphics.Typeface;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -20,6 +21,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.homenursingservice.ClusterMarker;
@@ -42,8 +44,11 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -90,7 +95,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
     private MaterialSearchBar materialSearchBar;
     private View mapView;
-    private Button btnFind;
     private RippleBackground rippleBg;
 
     private final float DEFAULT_ZOOM = 15;
@@ -104,14 +108,21 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     ArrayList<User> all_users_data=new ArrayList<>();
     GeoPoint geoPoint=new GeoPoint(23,78);
     private LatLngBounds mMapBoundary;
-
+    Button bt_send_request;
+    TextView tv_cost,location_head;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_map);
 
-        AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment)
-                getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
+        bt_send_request=findViewById(R.id.send_request);
+        tv_cost=findViewById(R.id.cost);
+        location_head=findViewById(R.id.location_head);
+        Typeface typeface=Typeface.createFromAsset(this.getAssets(),"fonts/aclonica.ttf");
+        tv_cost.setTypeface(typeface);
+        bt_send_request.setTypeface(typeface);
+        location_head.setTypeface(typeface);
+        //AutocompleteSupportFragment autocompleteFragment = (AutocompleteSupportFragment) getSupportFragmentManager().findFragmentById(R.id.autocomplete_fragment);
 
 
 //        autocompleteFragment.setPlaceFields(Arrays.asList(Place.Field.ID, Place.Field.NAME));
@@ -156,7 +167,6 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
     public void init_map(){
 
         materialSearchBar = findViewById(R.id.searchBar);
-        btnFind = findViewById(R.id.btn_find);
         rippleBg = findViewById(R.id.ripple_bg);
 
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
@@ -289,22 +299,22 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
             }
         });
-        btnFind.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                LatLng currentMarkerLocation = mMap.getCameraPosition().target;
-                rippleBg.startRippleAnimation();
-                new Handler().postDelayed(new Runnable() {
-                    @Override
-                    public void run() {
-                        rippleBg.stopRippleAnimation();
-                        startActivity(new Intent(MapActivity.this, MainActivity.class));
-                        finish();
-                    }
-                }, 3000);
-
-            }
-        });
+//        btnFind.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                LatLng currentMarkerLocation = mMap.getCameraPosition().target;
+//                rippleBg.startRippleAnimation();
+//                new Handler().postDelayed(new Runnable() {
+//                    @Override
+//                    public void run() {
+//                        rippleBg.stopRippleAnimation();
+//                        startActivity(new Intent(MapActivity.this, MainActivity.class));
+//                        finish();
+//                    }
+//                }, 3000);
+//
+//            }
+//        });
 
     }
 
@@ -441,6 +451,11 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
                             if (mLastKnownLocation != null) {
                                 geoPoint=new GeoPoint(mLastKnownLocation.getLatitude(),mLastKnownLocation.getLongitude());
+
+                                MarkerOptions markerOptions=new MarkerOptions();
+                                markerOptions.position(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()));
+                               // markerOptions.icon(BitmapDescriptorFactory.fromResource(R.drawable.marker3));
+                                mMap.addMarker(markerOptions);
                                 mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(mLastKnownLocation.getLatitude(), mLastKnownLocation.getLongitude()), DEFAULT_ZOOM));
                             } else {
                                 final LocationRequest locationRequest = LocationRequest.create();
@@ -488,9 +503,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
                 mClusterManager.setRenderer(mClusterManagerRenderer);
             }
 
-            Toast.makeText(getApplicationContext(),"i ma Claled",Toast.LENGTH_LONG).show();
             for(User userLocation:all_users_data){
-                Toast.makeText(getApplicationContext(),"i ma Claled",Toast.LENGTH_LONG).show();
+
                 Log.d(TAG, "addMapMarkers: location: " + userLocation.geoPoint);
                 try{
 
@@ -536,6 +550,8 @@ public class MapActivity extends FragmentActivity implements OnMapReadyCallback 
 
         mMap.moveCamera(CameraUpdateFactory.newLatLngBounds(mMapBoundary, 0));
     }
+
+
 
 
 

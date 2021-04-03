@@ -100,8 +100,9 @@
                         </LinearLayout>
                         <EditText
                             android:id="@+id/patient_name"
-                            android:inputType="none"
+                            android:inputType="text"
                             android:hint="Patient Name"
+                            android:imeOptions="actionNext"
                             android:textColorHint="#575757"
                             android:textColor="@color/black"
                             android:paddingStart="10dp"
@@ -130,6 +131,7 @@
                             android:id="@+id/age"
                             android:inputType="numberDecimal"
                             android:hint="Patient Age"
+                            android:imeOptions="actionNext"
                             android:textColorHint="#575757"
                             android:textColor="@color/black"
                             android:paddingStart="10dp"
@@ -158,8 +160,9 @@
                         <EditText
                             android:id="@+id/charge"
                             android:editable="false"
-                            android:inputType="none"
+                            android:inputType="phone"
                             android:enabled="false"
+                            android:imeOptions="actionNext"
                             android:hint=" Charge"
                             android:textColorHint="#575757"
                             android:textColor="@color/black"
@@ -190,11 +193,13 @@
                         <EditText
                             android:id="@+id/location"
                             android:hint="Location"
+                            android:inputType="text"
                             android:textColor="@color/black"
                             android:paddingStart="10dp"
                             android:textColorHint="#575757"
                             android:drawableEnd="@drawable/add_location"
                             android:paddingEnd="8dp"
+                            android:imeOptions="actionNext"
                             android:background="@drawable/edit_back2"
                             android:layout_width="match_parent"
                             android:layout_height="match_parent">
@@ -225,6 +230,7 @@
                             android:drawableEnd="@drawable/date_time"
                             android:paddingEnd="10dp"
                             android:textSize="18sp"
+                            android:imeOptions="actionDone"
                             android:textColor="@color/black"
                             android:textColorHint="#575757"
                             android:background="@drawable/edit_back2"

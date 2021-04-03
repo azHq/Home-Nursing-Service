@@ -6,7 +6,7 @@
     <color name="rinho">#1E272E</color>
     <color name="dark_rinho">#161C22</color>
     <color name="black1">#121212</color>
-    <color name="white">#D3D1D1</color>
+    <color name="white">#FFFFFF</color>
     <color name="dark_white">#ADACAC</color>
     <color name="gray1">#282828</color>
     <color name="divider_color1">#95C4C4C4</color>
@@ -16,4 +16,11 @@
     <color name="black">#000000</color>
     <color name="purple">#9E05D6</color>
     <color name="coffe">#3E2723</color>
+    <color name="primarydark">#059f09</color>
+    <color name="dark">#07840b</color>
+    <color name="colorWhite">#FFFFFF</color>
+    <color name="purplelight">#7528c6</color>
+    <color name="purpledeep">#3f0dc5</color>
+    <color name="darkgreen">#198506</color>
+    <color name="blue">#0925d9</color>
 </resources>

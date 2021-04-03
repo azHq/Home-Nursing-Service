@@ -42,18 +42,12 @@
                 android:orientation="horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
-                <ImageView
-                    android:src="@drawable/search"
-                    android:layout_width="25dp"
-                    android:layout_margin="10dp"
-                    android:layout_height="25dp">
-
-                </ImageView>
                 <RelativeLayout
                     android:layout_margin="5dp"
                     android:layout_width="30dp"
                     android:layout_height="30dp">
                     <ImageView
+                        android:id="@+id/notification"
                         android:src="@drawable/notifications"
                         android:layout_width="30dp"
                         android:layout_height="30dp">
@@ -125,7 +119,9 @@
                         android:layout_height="match_parent">
                         <LinearLayout
                             android:orientation="vertical"
-                            android:padding="15dp"
+                            android:paddingTop="10dp"
+                            android:paddingLeft="10dp"
+                            android:paddingRight="10dp"
                             android:layout_width="match_parent"
                             android:layout_height="150dp">
                             <de.hdodenhof.circleimageview.CircleImageView
@@ -138,9 +134,10 @@
                                 android:text="User Name"
                                 android:textSize="14sp"
                                 android:gravity="center"
+                                android:fontFamily="serif"
                                 android:textColor="@color/white"
                                 android:layout_width="match_parent"
-                                android:layout_height="30dp">
+                                android:layout_height="40dp">
 
                             </TextView>
                         </LinearLayout>
@@ -252,7 +249,7 @@
                                 android:layout_height="@dimen/half_dp">
                             </View>
                             <LinearLayout
-                                android:id="@+id/result"
+                                android:id="@+id/contact"
                                 android:layout_marginLeft="10dp"
                                 android:orientation="horizontal"
                                 android:layout_width="match_parent"
@@ -267,7 +264,7 @@
 
                                 <TextView
                                     android:textColor="@color/white"
-                                    android:text="Lactation"
+                                    android:text="Contact"
                                     android:textSize="18sp"
                                     android:fontFamily="serif"
                                     android:layout_marginLeft="10dp"
@@ -284,7 +281,7 @@
                                 android:layout_height="@dimen/half_dp">
                             </View>
                             <LinearLayout
-                                android:id="@+id/teachers"
+                                android:id="@+id/about"
                                 android:layout_marginLeft="10dp"
                                 android:orientation="horizontal"
                                 android:layout_width="match_parent"
@@ -300,7 +297,7 @@
                                 <TextView
                                     android:fontFamily="serif"
                                     android:textColor="@color/white"
-                                    android:text="Insuline"
+                                    android:text="About Us"
                                     android:textSize="18sp"
                                     android:layout_marginLeft="10dp"
                                     android:gravity="center"

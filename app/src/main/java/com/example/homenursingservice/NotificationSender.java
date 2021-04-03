@@ -23,7 +23,7 @@ import java.util.Map;
 public class NotificationSender {
 
     private static final String FCM_API = "https://fcm.googleapis.com/fcm/send";
-    private static final String serverKey ="key="+"AAAAKYvTyKk:APA91bGcu1-qcRSGZ9SKYlq73fRuYm5RGF_cxaurnploEUwhuinV-fKfdw-RvecRhVaoFAoHZGIlQI96H4VdrLJeD9n8n45Q5SpL0L_N4Nr3yyPlywkXEg18rRf3oXjXs3e_LuGaFSV6";
+    private static final String serverKey ="key="+"AAAAhG4MwZo:APA91bH7qjG4KlmsxPRr5Nu4-Jx8SJ5gQl9Dk5p1nhx38U3mUFiqWwrsqnAp2xiOPwh3J5bM373iNeZG0Unh9q3SFH0OVrpXNwqPF6l1jB5jGgBAnRO5Qd-D4SHslIBYyuc7TK3J_hV5";
     private static final String contentType = "application/json";
     public static NotificationSender instance;
     DocumentReference documentReferencefornotification;
@@ -69,7 +69,7 @@ public class NotificationSender {
             e.printStackTrace();
         }
         sendNotification(notification_payload);
-        set_notification_data(title, body, sender_id,sender_name,image_path,sender_type, receiver_id, document_id, sender_device_id, receiver_device_id, activity_type);
+        //set_notification_data(title, body, sender_id,sender_name,image_path,sender_type, receiver_id, document_id, sender_device_id, receiver_device_id, activity_type);
 
 
     }
@@ -126,6 +126,7 @@ public class NotificationSender {
 
             }
         });
+        createNotification(title,body,sender_id,sender_name,image_path,sender_type,receiver_id,document_id,sender_device_id,receiver_device_id,activity_type);
     }
     private void sendNotification(JSONObject jsonObject) {
 

@@ -9,13 +9,13 @@
 
     <RelativeLayout
         android:orientation="vertical"
-        android:background="@color/white"
+        android:background="@color/colorWhite"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
         <com.google.android.material.appbar.AppBarLayout
             android:id="@+id/appbar"
-            android:background="@color/white"
+            android:background="@color/colorWhite"
             android:layout_alignParentTop="true"
             android:theme="@style/AppTheme.AppBarOverlay"
             android:layout_width="match_parent"

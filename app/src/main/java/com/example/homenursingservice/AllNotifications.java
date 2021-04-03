@@ -6,6 +6,7 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
@@ -56,6 +58,7 @@ public class AllNotifications extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_all_notifications);
+        if(getSupportActionBar()!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         firebaseAuth= FirebaseAuth.getInstance();
         user_id=firebaseAuth.getCurrentUser().getUid();
         db= FirebaseFirestore.getInstance();
@@ -159,6 +162,7 @@ public class AllNotifications extends AppCompatActivity {
         });
         progressDialog=new ProgressDialog(AllNotifications.this);
         progressDialog.setMessage("Please Wait");
+        get_all_notifications();
     }
     public void search(String search_string){
         notifications.clear();
@@ -171,6 +175,14 @@ public class AllNotifications extends AppCompatActivity {
             }
         }
         recycleAdapter.notifyDataSetChanged();
+    }
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+            overridePendingTransition(android.R.anim.slide_in_left,android.R.anim.slide_out_right);
+        }
+        return super.onOptionsItemSelected(item);
     }
 
     @Override
@@ -208,9 +220,8 @@ public class AllNotifications extends AppCompatActivity {
                             String time=DateTimeConverter.getInstance().toDateStr(((Timestamp)map.get("time")).getSeconds()*1000);
                             String document_id=map.get("document_id").toString();
                             String notification_id=map.get("notification_id").toString();
-                            String sender_location=map.get("sender_location").toString();
                             String activity_type=map.get("activity_type").toString();
-                            Notification notification=new Notification(notification_id,title,body,sender_id,sender_name,sender_image_path,sender_device_id,sender_location,receiver_id,receiver_device_id,status,document_id,time,sender_type,activity_type);
+                            Notification notification=new Notification(notification_id,title,body,sender_id,sender_name,sender_image_path,sender_device_id,"",receiver_id,receiver_device_id,status,document_id,time,sender_type,activity_type);
                             notifications.add(notification);
 
                         }

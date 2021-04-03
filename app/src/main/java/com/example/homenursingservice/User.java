@@ -4,7 +4,6 @@ import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.GeoPoint;
 
 public class User {
-
     public String user_id;
     public String user_name;
     public String user_type;

@@ -12,4 +12,7 @@
     <string name="choose_location">Please Choose Location</string>
     <string name="patient_name">Please Enter Patient Name</string>
     <string name="empty">Empty</string>
+    <string name="slogan">আমাদের স্লোগান</string>
+    <string name="mission">আমাদের মিশন</string>
+    <string name="about">এবাউট</string>
 </resources>

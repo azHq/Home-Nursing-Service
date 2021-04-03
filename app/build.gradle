@@ -48,5 +48,5 @@ dependencies {
     implementation 'id.zelory:compressor:2.1.0'
     implementation 'com.google.firebase:firebase-storage:19.1.1'
     implementation 'com.github.lguipeng:BubbleView:1.0.1'
-
+    implementation 'com.github.ssl-zahid:SSLCommerz-Android-Library-:v1.0.2'
 }

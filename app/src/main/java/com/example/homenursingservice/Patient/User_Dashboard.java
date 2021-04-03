@@ -16,23 +16,36 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.homenursingservice.About;
+import com.example.homenursingservice.AllNotifications;
 import com.example.homenursingservice.CustomAlertDialog;
+import com.example.homenursingservice.DateTimeConverter;
 import com.example.homenursingservice.Doctor.DoctorProfile;
+import com.example.homenursingservice.Notification;
 import com.example.homenursingservice.R;
+import com.example.homenursingservice.RequestedService;
+import com.example.homenursingservice.ServiceModel;
 import com.example.homenursingservice.SharedPrefManager;
 import com.example.homenursingservice.User_Login;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -45,13 +58,20 @@ import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.android.material.navigation.NavigationView;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -65,7 +85,6 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
     private LocationCallback locationCallback;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     String TAG="MAin";
-    FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     GeoPoint geoPoint;
     DrawerLayout drawer;
@@ -76,20 +95,41 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
     FragmentManager fragmentManager;
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
-    Button vaccine;
     TextView user_name;
     int fragment_number=1;
     public static TextView message_unseen;
     ActionBar actionBar;
+    GridView gridView;
+    ImageView notification;
+    String user_id;
+    FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
+    Button vaccine,insulin,baby_care,lactation,medicine,injection,cannula,oxygen_support,physio_therapy;
+    ArrayList<ServiceModel> serviceModelArrayList=new ArrayList<>();
+    ProgressDialog progressDialog;
+    HashMap<String,Integer> logos=new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_user_dashboard);
+        user_id=firebaseAuth.getCurrentUser().getUid();
+        logos.put("vaccine",R.drawable.vaccine);
+        logos.put("injection",R.drawable.injection);
+        logos.put("lactation",R.drawable.lactation);
+        logos.put("insulin",R.drawable.insuline);
+        logos.put("baby care",R.drawable.baby_care);
+        logos.put("physio therapy",R.drawable.physio_therapy);
+        logos.put("oxygen support",R.drawable.oxygen_support);
+        logos.put("cannula",R.drawable.cannula);
+        logos.put("medicine",R.drawable.medicine);
+        progressDialog=new ProgressDialog(User_Dashboard.this);
+        progressDialog.setTitle("Please Wait....");
+        progressDialog.show();;
         actionBar=getSupportActionBar();
         menu=findViewById(R.id.menu);
         menu2=findViewById(R.id.menu_icon2);
         user_name=findViewById(R.id.user_name);
         message_unseen=findViewById(R.id.message_unseen);
+        notification=findViewById(R.id.notification);
         user_name.setText(SharedPrefManager.getInstance(getApplicationContext()).getUser().user_name);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(User_Dashboard.this);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
@@ -114,14 +154,22 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
             }
         });
         frameLayout=findViewById(R.id.frame_layout);
-        vaccine=findViewById(R.id.vaccine);
-        vaccine.setOnClickListener(new View.OnClickListener() {
+        gridView = (GridView) findViewById(R.id.grid_view); // init GridView
+        // Create an object of CustomAdapter and set Adapter to GirdView
+        // implement setOnItemClickListener event on GridView
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-
-                startActivity(new Intent(getApplicationContext(),MapActivity.class));
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(User_Dashboard.this, ServiceDetails.class);
+                intent.putExtra("name", serviceModelArrayList.get(position).name);
+                intent.putExtra("id", serviceModelArrayList.get(position).id);
+                intent.putExtra("details", serviceModelArrayList.get(position).details);
+                intent.putExtra("price", serviceModelArrayList.get(position).price);
+                intent.putExtra("logo", serviceModelArrayList.get(position).logo);
+                startActivity(intent); // start Intent
             }
         });
+
         getLocationPermission();
         LinearLayout profile=findViewById(R.id.profile);
         profile.setOnClickListener(new View.OnClickListener() {
@@ -150,9 +198,60 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
                 changeFragmentView(new RequestedServiceList());
             }
         });
+        LinearLayout contact=findViewById(R.id.contact);
+        contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(actionBar!=null) actionBar.setTitle("Contact");
+                changeFragmentView(new All_Doctors());
+            }
+        });
+        LinearLayout about=findViewById(R.id.about);
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(actionBar!=null) actionBar.setTitle("About");
+                changeFragmentView(new About());
+            }
+        });
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(actionBar!=null) actionBar.setTitle("Notification");
+                startActivity(new Intent(getApplicationContext(),AllNotifications.class));
+            }
+        });
+        getAllServices();
+        get_all_notifications();
+
+    }
+    public void get_all_notifications(){
+        progressDialog.show();
+        Query documentReference=db.collection("AllNotifications").whereEqualTo("seen_status","unseen").whereEqualTo("receiver_id",user_id);
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
 
 
+                if(task.isComplete()){
 
+                    QuerySnapshot querySnapshot=task.getResult();
+                    if(querySnapshot!=null&&querySnapshot.size()>0){
+                        message_unseen.setVisibility(View.VISIBLE);
+                        message_unseen.setText(querySnapshot.size()+"");
+                    }
+                    else{
+                        message_unseen.setVisibility(View.GONE);
+
+                    }
+
+                }
+                progressDialog.dismiss();
+
+            }
+
+
+        });
     }
     public void BookService(View view){
         Intent tnt=new Intent(getApplicationContext(),BookServiceForm.class);
@@ -285,7 +384,38 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
         }
 
     }
-
+    public void getAllServices()
+    {
+        Query query= db.collection("ServiceList");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                progressDialog.dismiss();
+                if(task.isComplete()){
+                    QuerySnapshot queryDocumentSnapshots=task.getResult();
+                    for(DocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                        Map<String,Object> data=documentSnapshot.getData();
+                        System.out.println(logos.get(data.get("service_name").toString().toLowerCase()));
+                        Integer integer=logos.get(data.get("service_name").toString().toLowerCase());
+                        int logo=0;
+                        boolean nameEnable=false;
+                        if(integer!=null){
+                            logo=logos.get(data.get("service_name").toString().toLowerCase());
+                        }
+                        else
+                        {
+                            nameEnable=true;
+                            logo=R.drawable.service_logo;
+                        }
+                        ServiceModel requestedService=new ServiceModel(data.get("service_id").toString(),data.get("service_name").toString(),data.get("service_charge").toString(),data.get("description").toString(),logo,nameEnable);
+                        serviceModelArrayList.add(requestedService);
+                    }
+                    CustomAdapter customAdapter = new CustomAdapter(getApplicationContext(), serviceModelArrayList);
+                    gridView.setAdapter(customAdapter);
+                }
+            }
+        });
+    }
     @SuppressLint("MissingPermission")
     private void getDeviceLocation() {
 
@@ -351,5 +481,42 @@ public class User_Dashboard extends AppCompatActivity implements NavigationView.
         }
     }
 
+    public static class CustomAdapter extends BaseAdapter {
+        Context context;
+        ArrayList<ServiceModel> serviceModelArrayList;
+        LayoutInflater inflter;
+        public CustomAdapter(Context applicationContext, ArrayList<ServiceModel> serviceModelArrayList) {
+            this.context = applicationContext;
+            this.serviceModelArrayList = serviceModelArrayList;
+            inflter = (LayoutInflater.from(applicationContext));
+        }
+        @Override
+        public int getCount() {
+            return serviceModelArrayList.size();
+        }
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            ServiceModel serviceModel=serviceModelArrayList.get(i);
+            view = inflter.inflate(R.layout.service_item_layout, null); // inflate the layout
+            ImageView icon = (ImageView) view.findViewById(R.id.logo); // get the reference of ImageView
+            TextView textView=view.findViewById(R.id.name);
+            if(!serviceModel.nameEnable)
+            {
+                textView.setText(serviceModel.name);
+                textView.setVisibility(View.GONE);
+            }
+            icon.setImageResource(serviceModel.logo); // set logo images
+
+            return view;
+        }
+    }
 
 }

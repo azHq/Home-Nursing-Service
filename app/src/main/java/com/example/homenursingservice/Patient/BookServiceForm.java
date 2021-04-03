@@ -3,16 +3,22 @@ package com.example.homenursingservice.Patient;
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
+import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.DatePickerDialog;
 import android.app.ProgressDialog;
 import android.app.TimePickerDialog;
+import android.content.Context;
+import android.content.Intent;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.text.format.DateFormat;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -21,10 +27,12 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.example.homenursingservice.Constants;
 import com.example.homenursingservice.CustomAlertDialog;
 import com.example.homenursingservice.DateTimeConverter;
 import com.example.homenursingservice.NotificationSender;
 import com.example.homenursingservice.R;
+import com.example.homenursingservice.ServiceModel;
 import com.example.homenursingservice.SharedPrefManager;
 import com.example.homenursingservice.SpinnerAdapter;
 import com.example.homenursingservice.User;
@@ -34,9 +42,13 @@ import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -44,6 +56,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class BookServiceForm extends AppCompatActivity {
 
@@ -53,7 +66,7 @@ public class BookServiceForm extends AppCompatActivity {
     String service_type="",service_charge="",patient_age="",time="",location_name="";
     GeoPoint location_geopoint=new GeoPoint(0,0);
     ArrayList<Object> service_list=new ArrayList<>();
-    List<String> service_charge_list= Arrays.asList("","200","300","400","500");
+    List<String> service_charge_list=new ArrayList<>();
     DatePickerDialog datePicker;
     Calendar calendar;
     int day,month,year,hour,minute;
@@ -63,10 +76,14 @@ public class BookServiceForm extends AppCompatActivity {
     ProgressDialog progressDialog;
     private String user_name,image_path,device_id,phone_number,patient_name="";
     Date date;
+    String admin_device_id="",admin_id="";
+    AlertDialog alertDialog;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_book_service_form);
+        service_type=getIntent().getStringExtra("name");
+        service_charge=getIntent().getStringExtra("price");
         if(getSupportActionBar()!=null) getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         service_list.add("Service Type");
         service_list.add("Insulin");
@@ -86,7 +103,6 @@ public class BookServiceForm extends AppCompatActivity {
         time_tv=findViewById(R.id.time);
         patient_name_et=findViewById(R.id.patient_name);
         location_name_et=findViewById(R.id.location);
-        spinner.setAdapter(new SpinnerAdapter(getApplicationContext(),1,service_list));
         calendar=Calendar.getInstance();
         date=new Date();
         calendar.setTime(date);
@@ -168,7 +184,46 @@ public class BookServiceForm extends AppCompatActivity {
 
             }
         });
-
+        getAllServices();
+        getAdminData();
+    }
+    public void getAdminData()
+    {
+        DocumentReference documentReference = db.collection("AppConfiguration").document("HNS");
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+                    progressDialog.dismiss();
+                    if (document.exists()) {
+                        Map<String, Object> map = document.getData();
+                        admin_device_id=map.get("device_id").toString();
+                        admin_id=map.get("id").toString();
+                    }
+                }
+            }
+        });
+    }
+    public void getAllServices()
+    {
+        Query query= db.collection("ServiceList");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                progressDialog.dismiss();
+                if(task.isComplete()){
+                    QuerySnapshot queryDocumentSnapshots=task.getResult();
+                    for(DocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                        Map<String,Object> data=documentSnapshot.getData();
+                        service_list.add(data.get("service_name").toString());
+                        service_charge_list.add(data.get("service_charge").toString());
+                    }
+                    spinner.setAdapter(new SpinnerAdapter(getApplicationContext(),1,service_list));
+                    if(service_type!=null&&service_type.length()>0) spinner.setSelection(service_list.indexOf(service_type));
+                }
+            }
+        });
     }
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -252,7 +307,7 @@ public class BookServiceForm extends AppCompatActivity {
                 location_name_et.setText("");
                 progressDialog.dismiss();
                 create_notification(service_id);
-                CustomAlertDialog.getInstance().success_message(BookServiceForm.this,"Home Nursing Service","Your Request Submitted Successfully",true);
+                success_message(service_id);
             }
         }).addOnCanceledListener(new OnCanceledListener() {
             @Override
@@ -261,7 +316,43 @@ public class BookServiceForm extends AppCompatActivity {
             }
         });
     }
+    public void success_message(final String id){
+        AlertDialog.Builder alert=new AlertDialog.Builder(BookServiceForm.this);
+        View view= LayoutInflater.from(BookServiceForm.this).inflate(R.layout.exit_panel,null);
+        alert.setView(view);
+        alertDialog=alert.show();;
+        Button yes=view.findViewById(R.id.yes);
+        Button no=view.findViewById(R.id.no);
+        TextView title_tv=view.findViewById(R.id.title);
+        title_tv.setText(R.string.app_name);
+        TextView body_tv=view.findViewById(R.id.body);
+        body_tv.setText("Your Request Submitted Successfully.Please Complete Your Payment.Otherwise Your Request Will Be Cancelled.");
+        yes.setText("Pay Now");
+        no.setText("Cancel");
+        yes.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                Intent tnt=new Intent(getApplicationContext(),Payment.class);
+                tnt.putExtra("service_charge",service_charge);
+                tnt.putExtra("id",id);
+                startActivity(tnt);
+            }
+        });
+        no.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                alertDialog.dismiss();
+                db.document(id).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
+                    @Override
+                    public void onComplete(@NonNull Task<Void> task) {
+                        CustomAlertDialog.getInstance().success_message(BookServiceForm.this,R.string.app_name+"","Your Request Have Been Cancel",true);
+                    }
+                });
+            }
+        });
+    }
     public void create_notification(String service_id){
-        NotificationSender.getInstance(getApplicationContext()).set_notification_data2("Patient Send Service Request",user_name+" want to take "+service_type+" Service.",user_id,user_name,image_path,"Patient","",service_id,device_id,"","service_request");
+        NotificationSender.getInstance(getApplicationContext()).set_notification_data2("Patient Send Service Request",user_name+" want to take "+service_type+" Service.",user_id,user_name,image_path,"Patient",admin_id,service_id,device_id,admin_device_id,"service_request");
     }
 }

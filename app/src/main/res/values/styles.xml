@@ -70,6 +70,16 @@
         <item name="android:windowFullscreen">true</item>
         <item name="android:windowContentOverlay">@null</item>
     </style>
+    <style name="mytheme" parent="Theme.AppCompat.Light">
+        <item name="colorPrimary">@color/primarydark</item>
+        <item name="colorPrimaryDark">@color/dark</item>
+    </style>
+    <style name="NoActionBarTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
 
 
 </resources>

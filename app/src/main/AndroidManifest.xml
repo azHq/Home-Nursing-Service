@@ -14,7 +14,10 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".Patient.ServiceDetails"></activity>
+        <activity android:name=".Patient.Payment"></activity>
+        <activity
+            android:name=".Patient.ServiceDetails"
+            android:label="Service Details"></activity>
         <activity
             android:name=".Patient.BookServiceForm"
             android:label="Book Service"
@@ -38,7 +41,31 @@
         <activity
             android:name=".User_Login"
             android:screenOrientation="portrait"
-            android:theme="@style/Login_Theme" />
+            android:theme="@style/fullscreen" />
+        <activity
+            android:name=".Messenger"
+            android:screenOrientation="portrait"
+            android:theme="@style/NoActionBarTheme"></activity>
+        <activity
+            android:name=".AllNotifications"
+            android:theme="@style/NoActionBarTheme"></activity>
+        <activity
+            android:name=".Profile_View"
+            android:label="Profile"></activity>
+
+        <service
+            android:name=".FirebaseMessagingService"
+            android:enabled="true"
+            android:exported="false">
+            <intent-filter>
+                <action android:name="com.google.firebase.MESSAGING_EVENT" />
+            </intent-filter>
+        </service>
+        <service
+            android:name=".All_Notification_Service"
+            android:enabled="true"
+            android:exported="false" />
+
         <activity
             android:name=".MainActivity"
             android:theme="@style/fullscreen">

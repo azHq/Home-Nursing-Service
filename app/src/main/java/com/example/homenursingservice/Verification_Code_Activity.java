@@ -206,7 +206,7 @@ public class Verification_Code_Activity extends AppCompatActivity {
 
                     progressDialog.dismiss();
                     Toast.makeText(getApplicationContext(),"Log In Successfully",Toast.LENGTH_LONG).show();
-                    startActivity(new Intent(getApplicationContext(), User_Dashboard.class));
+                    startActivity(new Intent(getApplicationContext(), DoctorDashboard.class));
                     finish();
                 }
             }).addOnFailureListener(new OnFailureListener() {

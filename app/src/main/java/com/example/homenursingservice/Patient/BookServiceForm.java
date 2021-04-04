@@ -49,7 +49,16 @@ import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
+import com.sslcommerz.library.payment.model.datafield.MandatoryFieldModel;
+import com.sslcommerz.library.payment.model.dataset.TransactionInfo;
+import com.sslcommerz.library.payment.model.util.CurrencyType;
+import com.sslcommerz.library.payment.model.util.ErrorKeys;
+import com.sslcommerz.library.payment.model.util.SdkCategory;
+import com.sslcommerz.library.payment.model.util.SdkType;
+import com.sslcommerz.library.payment.viewmodel.listener.OnPaymentResultListener;
+import com.sslcommerz.library.payment.viewmodel.management.PayUsingSSLCommerz;
 
+import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -57,6 +66,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 
 public class BookServiceForm extends AppCompatActivity {
 
@@ -328,27 +338,24 @@ public class BookServiceForm extends AppCompatActivity {
         TextView body_tv=view.findViewById(R.id.body);
         body_tv.setText("Your Request Submitted Successfully.Please Complete Your Payment.Otherwise Your Request Will Be Cancelled.");
         yes.setText("Pay Now");
-        no.setText("Cancel");
+        no.setText("Pay Later");
         yes.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                Intent tnt=new Intent(getApplicationContext(),Payment.class);
-                tnt.putExtra("service_charge",service_charge);
-                tnt.putExtra("id",id);
-                startActivity(tnt);
+//                Intent tnt=new Intent(getApplicationContext(),Payment.class);
+//                tnt.putExtra("service_charge",service_charge);
+//                tnt.putExtra("id",id);
+//                startActivity(tnt);
+                Payment payment=new Payment(BookServiceForm.this);
+                payment.sendPayment(service_charge,id,true);
             }
         });
         no.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 alertDialog.dismiss();
-                db.document(id).delete().addOnCompleteListener(new OnCompleteListener<Void>() {
-                    @Override
-                    public void onComplete(@NonNull Task<Void> task) {
-                        CustomAlertDialog.getInstance().success_message(BookServiceForm.this,R.string.app_name+"","Your Request Have Been Cancel",true);
-                    }
-                });
+
             }
         });
     }

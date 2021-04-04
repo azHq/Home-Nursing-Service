@@ -49,6 +49,10 @@ public class User_Login extends AppCompatActivity {
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
 
                 user_type=user_types.get(position);
+                if(user_type.equalsIgnoreCase("caregiver"))
+                {
+                    user_type="Doctor";
+                }
             }
 
             @Override

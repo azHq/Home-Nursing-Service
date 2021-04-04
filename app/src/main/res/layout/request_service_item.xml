@@ -168,8 +168,8 @@
                 android:layout_height="20dp">
             </TextView>
             <Button
-                android:id="@+id/view_details"
-                android:text="View Detais"
+                android:id="@+id/payment"
+                android:text="Pay Now"
                 android:singleLine="true"
                 android:ellipsize="marquee"
                 android:marqueeRepeatLimit="marquee_forever"

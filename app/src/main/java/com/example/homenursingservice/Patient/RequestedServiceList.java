@@ -103,7 +103,8 @@ public class RequestedServiceList extends Fragment {
                 status=mView.findViewById(R.id.status);
                 doctor_name=mView.findViewById(R.id.doctor_name);
                 phone_number=mView.findViewById(R.id.phone_number);
-                details=mView.findViewById(R.id.view_details);
+                details=mView.findViewById(R.id.payment);
+
             }
 
 
@@ -157,12 +158,15 @@ public class RequestedServiceList extends Fragment {
 
 
             holder.status.setSelected(true);
+            if(requestedService.payment>0){
+                holder.details.setVisibility(View.GONE);
+            }
             holder.details.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent tnt=new Intent(getContext(),ServiceDetails.class);
-                    tnt.putExtra("service_id",requestedService.service_id);
-                    startActivity(tnt);
+                    Payment payment=new Payment(getContext());
+                    System.out.println(requestedService.service_charge+""+requestedService.service_id);
+                    payment.sendPayment(requestedService.service_charge+"",requestedService.service_id,false);
 
                 }
             });

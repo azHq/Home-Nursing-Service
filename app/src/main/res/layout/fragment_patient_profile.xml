@@ -170,7 +170,7 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="Total Served"
+                        android:text="Total Service"
                         android:layout_height="match_parent">
                     </TextView>
                     <TextView
@@ -198,36 +198,11 @@
                         android:layout_weight="1"
                         android:gravity="center"
                         android:textColor="@color/white"
-                        android:text="Total Earn"
+                        android:text="Total Spent"
                         android:layout_height="match_parent">
                     </TextView>
                     <TextView
                         android:id="@+id/total_earn"
-                        android:background="@drawable/table_border2"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:text="00"
-                        android:textColor="@color/white"
-                        android:layout_height="match_parent">
-                    </TextView>
-                </LinearLayout>
-                <LinearLayout
-                    android:layout_width="match_parent"
-                    android:orientation="horizontal"
-                    android:weightSum="2"
-                    android:layout_height="40dp">
-                    <TextView
-                        android:background="@drawable/table_border"
-                        android:layout_width="0dp"
-                        android:layout_weight="1"
-                        android:gravity="center"
-                        android:textColor="@color/white"
-                        android:text="Total Commission"
-                        android:layout_height="match_parent">
-                    </TextView>
-                    <TextView
-                        android:id="@+id/commission"
                         android:background="@drawable/table_border2"
                         android:layout_width="0dp"
                         android:layout_weight="1"

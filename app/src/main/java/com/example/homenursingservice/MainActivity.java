@@ -121,7 +121,7 @@ public class MainActivity extends AppCompatActivity {
                 finish();
             }
             else{
-                startActivity(new Intent(getApplicationContext(), User_Dashboard.class));
+                startActivity(new Intent(getApplicationContext(), DoctorDashboard.class));
                 finish();
             }
 

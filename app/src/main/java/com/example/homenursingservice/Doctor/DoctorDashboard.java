@@ -1,6 +1,7 @@
 package com.example.homenursingservice.Doctor;
 
 import androidx.annotation.NonNull;
+import androidx.appcompat.app.ActionBar;
 import androidx.appcompat.app.ActionBarDrawerToggle;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.PopupMenu;
@@ -16,23 +17,38 @@ import androidx.fragment.app.FragmentTransaction;
 import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.FrameLayout;
+import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.homenursingservice.About;
+import com.example.homenursingservice.AllNotifications;
 import com.example.homenursingservice.CustomAlertDialog;
+import com.example.homenursingservice.Patient.All_Doctors;
+import com.example.homenursingservice.Patient.BookServiceForm;
 import com.example.homenursingservice.Patient.MapActivity;
+import com.example.homenursingservice.Patient.PatientProfile;
+import com.example.homenursingservice.Patient.RequestedServiceList;
+import com.example.homenursingservice.Patient.ServiceDetails;
+import com.example.homenursingservice.Patient.User_Dashboard;
 import com.example.homenursingservice.R;
+import com.example.homenursingservice.ServiceModel;
 import com.example.homenursingservice.SharedPrefManager;
 import com.example.homenursingservice.User_Login;
 import com.google.android.gms.location.FusedLocationProviderClient;
@@ -51,10 +67,13 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.GeoPoint;
+import com.google.firebase.firestore.Query;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -68,7 +87,6 @@ public class DoctorDashboard extends AppCompatActivity implements NavigationView
     private LocationCallback locationCallback;
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     String TAG="MAin";
-    FirebaseAuth firebaseAuth;
     FirebaseUser firebaseUser;
     GeoPoint geoPoint;
     DrawerLayout drawer;
@@ -79,31 +97,47 @@ public class DoctorDashboard extends AppCompatActivity implements NavigationView
     FragmentManager fragmentManager;
     private static String POPUP_CONSTANT = "mPopup";
     private static String POPUP_FORCE_SHOW_ICON = "setForceShowIcon";
-    Button vaccine;
     TextView user_name;
-    LinearLayout account_status;
-    ImageView cancel;
-    ProgressDialog progressDialog;
-    String user_id;
+    int fragment_number=1;
     public static TextView message_unseen;
+    ActionBar actionBar;
+    GridView gridView;
+    ImageView notification;
+    String user_id;
+    Button request;
+    FirebaseAuth firebaseAuth=FirebaseAuth.getInstance();
+    Button vaccine,insulin,baby_care,lactation,medicine,injection,cannula,oxygen_support,physio_therapy;
+    ArrayList<ServiceModel> serviceModelArrayList=new ArrayList<>();
+    ProgressDialog progressDialog;
+    HashMap<String,Integer> logos=new HashMap<>();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_doctor_dashboard);
-
+        user_id=firebaseAuth.getCurrentUser().getUid();
+        logos.put("vaccine",R.drawable.vaccine);
+        logos.put("injection",R.drawable.injection);
+        logos.put("lactation",R.drawable.lactation);
+        logos.put("insulin",R.drawable.insuline);
+        logos.put("baby care",R.drawable.baby_care);
+        logos.put("physio therapy",R.drawable.physio_therapy);
+        logos.put("oxygen support",R.drawable.oxygen_support);
+        logos.put("cannula",R.drawable.cannula);
+        logos.put("medicine",R.drawable.medicine);
+        progressDialog=new ProgressDialog(DoctorDashboard.this);
+        progressDialog.setTitle("Please Wait....");
+        progressDialog.show();;
+        actionBar=getSupportActionBar();
         menu=findViewById(R.id.menu);
         menu2=findViewById(R.id.menu_icon2);
         user_name=findViewById(R.id.user_name);
         message_unseen=findViewById(R.id.message_unseen);
+        notification=findViewById(R.id.notification);
+        request=findViewById(R.id.request);
+        request.setVisibility(View.GONE);
         user_name.setText(SharedPrefManager.getInstance(getApplicationContext()).getUser().user_name);
         mFusedLocationProviderClient = LocationServices.getFusedLocationProviderClient(DoctorDashboard.this);
         drawer = (DrawerLayout) findViewById(R.id.drawer_layout);
-        cancel=findViewById(R.id.cancel);
-        account_status=findViewById(R.id.account_status);
-        progressDialog=new ProgressDialog(DoctorDashboard.this);
-        progressDialog.setMessage("Please Wait....");
-        firebaseAuth=FirebaseAuth.getInstance();
-        if (firebaseAuth.getCurrentUser() != null) user_id = firebaseAuth.getCurrentUser().getUid();
         menu.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -124,25 +158,110 @@ public class DoctorDashboard extends AppCompatActivity implements NavigationView
 
             }
         });
-        cancel.setOnClickListener(new View.OnClickListener() {
+        frameLayout=findViewById(R.id.frame_layout);
+        gridView = (GridView) findViewById(R.id.grid_view); // init GridView
+        // Create an object of CustomAdapter and set Adapter to GirdView
+        // implement setOnItemClickListener event on GridView
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
-            public void onClick(View v) {
-                account_status.setVisibility(View.GONE);
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                Intent intent = new Intent(DoctorDashboard.this, ServiceDetails.class);
+                intent.putExtra("name", serviceModelArrayList.get(position).name);
+                intent.putExtra("id", serviceModelArrayList.get(position).id);
+                intent.putExtra("details", serviceModelArrayList.get(position).details);
+                intent.putExtra("price", serviceModelArrayList.get(position).price);
+                intent.putExtra("logo", serviceModelArrayList.get(position).logo);
+                intent.putExtra("user_type","doctor");
+                startActivity(intent); // start Intent
             }
         });
-        frameLayout=findViewById(R.id.frame_layout);
+
+        getLocationPermission();
         LinearLayout profile=findViewById(R.id.profile);
         profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
-                changeFragmentView(new DoctorProfile());
+                changeFragmentView(new PatientProfile());
 
             }
         });
-        getLocationPermission();
-        get_user_data();
+        LinearLayout dashboard=findViewById(R.id.dashboard);
+        dashboard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
 
+                fragmentManager =getSupportFragmentManager();
+                fragmentManager.popBackStack();
+                drawer.closeDrawer(GravityCompat.START);
+            }
+        });
+        LinearLayout service_list=findViewById(R.id.requested_service_list);
+        service_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(actionBar!=null) actionBar.setTitle("All Requests");
+                changeFragmentView(new RequestedServiceList());
+            }
+        });
+        LinearLayout contact=findViewById(R.id.contact);
+        contact.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(actionBar!=null) actionBar.setTitle("Contact");
+                changeFragmentView(new All_Doctors());
+            }
+        });
+        LinearLayout about=findViewById(R.id.about);
+        about.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(actionBar!=null) actionBar.setTitle("About");
+                changeFragmentView(new About());
+            }
+        });
+        notification.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if(actionBar!=null) actionBar.setTitle("Notification");
+                startActivity(new Intent(getApplicationContext(), AllNotifications.class));
+            }
+        });
+        getAllServices();
+        get_all_notifications();
+
+    }
+    public void get_all_notifications(){
+        progressDialog.show();
+        Query documentReference=db.collection("AllNotifications").whereEqualTo("seen_status","unseen").whereEqualTo("receiver_id",user_id);
+        documentReference.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+
+
+                if(task.isComplete()){
+
+                    QuerySnapshot querySnapshot=task.getResult();
+                    if(querySnapshot!=null&&querySnapshot.size()>0){
+                        message_unseen.setVisibility(View.VISIBLE);
+                        message_unseen.setText(querySnapshot.size()+"");
+                    }
+                    else{
+                        message_unseen.setVisibility(View.GONE);
+
+                    }
+
+                }
+                progressDialog.dismiss();
+
+            }
+
+
+        });
+    }
+    public void BookService(View view){
+        Intent tnt=new Intent(getApplicationContext(), BookServiceForm.class);
+        startActivity(tnt);
     }
     public void changeFragmentView(Fragment fragment){
 
@@ -249,9 +368,13 @@ public class DoctorDashboard extends AppCompatActivity implements NavigationView
 
         if(db!=null&&firebaseUser!=null){
 
-            Map<String,GeoPoint> map=new HashMap<>();
-            map.put("loaction",geoPoint);
-            db.collection("AllDoctors").document(firebaseUser.getUid()).set(map).addOnSuccessListener(new OnSuccessListener<Void>() {
+            Map<String,Object> map=new HashMap<>();
+            map.put("location",geoPoint);
+            String user_collection="AllDoctors";
+            if(SharedPrefManager.getInstance(getApplicationContext()).getUser().user_type.equalsIgnoreCase("patient")){
+                user_collection="AllUsers";
+            }
+            db.collection(user_collection).document(firebaseUser.getUid()).update(map).addOnSuccessListener(new OnSuccessListener<Void>() {
                 @Override
                 public void onSuccess(Void aVoid) {
 
@@ -267,7 +390,38 @@ public class DoctorDashboard extends AppCompatActivity implements NavigationView
         }
 
     }
-
+    public void getAllServices()
+    {
+        Query query= db.collection("ServiceList");
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                progressDialog.dismiss();
+                if(task.isComplete()){
+                    QuerySnapshot queryDocumentSnapshots=task.getResult();
+                    for(DocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                        Map<String,Object> data=documentSnapshot.getData();
+                        System.out.println(logos.get(data.get("service_name").toString().toLowerCase()));
+                        Integer integer=logos.get(data.get("service_name").toString().toLowerCase());
+                        int logo=0;
+                        boolean nameEnable=false;
+                        if(integer!=null){
+                            logo=logos.get(data.get("service_name").toString().toLowerCase());
+                        }
+                        else
+                        {
+                            nameEnable=true;
+                            logo=R.drawable.service_logo;
+                        }
+                        ServiceModel requestedService=new ServiceModel(data.get("service_id").toString(),data.get("service_name").toString(),data.get("service_charge").toString(),data.get("description").toString(),logo,nameEnable);
+                        serviceModelArrayList.add(requestedService);
+                    }
+                    User_Dashboard.CustomAdapter customAdapter = new User_Dashboard.CustomAdapter(getApplicationContext(), serviceModelArrayList);
+                    gridView.setAdapter(customAdapter);
+                }
+            }
+        });
+    }
     @SuppressLint("MissingPermission")
     private void getDeviceLocation() {
 
@@ -332,35 +486,43 @@ public class DoctorDashboard extends AppCompatActivity implements NavigationView
             super.onBackPressed();
         }
     }
-    public void get_user_data() {
 
-        progressDialog.show();
-        DocumentReference documentReference = db.collection("AllUsers").document(user_id);
-        documentReference.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    progressDialog.dismiss();
-                    if (document.exists()) {
-
-                        Map<String, Object> map = document.getData();
-                        String account_status_str=map.get("account_status").toString();
-                        if(account_status_str.equals("pending")){
-                            account_status.setVisibility(View.VISIBLE);
-                        }
-
-
-
-
-                    }
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.connection_problem, Toast.LENGTH_LONG).show();
-                }
+    public static class CustomAdapter extends BaseAdapter {
+        Context context;
+        ArrayList<ServiceModel> serviceModelArrayList;
+        LayoutInflater inflter;
+        public CustomAdapter(Context applicationContext, ArrayList<ServiceModel> serviceModelArrayList) {
+            this.context = applicationContext;
+            this.serviceModelArrayList = serviceModelArrayList;
+            inflter = (LayoutInflater.from(applicationContext));
+        }
+        @Override
+        public int getCount() {
+            return serviceModelArrayList.size();
+        }
+        @Override
+        public Object getItem(int i) {
+            return null;
+        }
+        @Override
+        public long getItemId(int i) {
+            return 0;
+        }
+        @Override
+        public View getView(int i, View view, ViewGroup viewGroup) {
+            ServiceModel serviceModel=serviceModelArrayList.get(i);
+            view = inflter.inflate(R.layout.service_item_layout, null); // inflate the layout
+            ImageView icon = (ImageView) view.findViewById(R.id.logo); // get the reference of ImageView
+            TextView textView=view.findViewById(R.id.name);
+            if(!serviceModel.nameEnable)
+            {
+                textView.setText(serviceModel.name);
+                textView.setVisibility(View.GONE);
             }
-        });
+            icon.setImageResource(serviceModel.logo); // set logo images
 
+            return view;
+        }
     }
-
 
 }

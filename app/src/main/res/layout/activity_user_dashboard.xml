@@ -125,7 +125,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="150dp">
                             <de.hdodenhof.circleimageview.CircleImageView
-                                android:src="@drawable/doctor"
+                                android:src="@drawable/profile_icon"
                                 android:layout_width="match_parent"
                                 android:layout_height="100dp">
                             </de.hdodenhof.circleimageview.CircleImageView>

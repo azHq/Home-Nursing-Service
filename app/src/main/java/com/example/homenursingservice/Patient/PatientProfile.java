@@ -22,15 +22,20 @@ import androidx.annotation.NonNull;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 
+import com.example.homenursingservice.DateTimeConverter;
 import com.example.homenursingservice.EngToBanConverter;
 import com.example.homenursingservice.R;
+import com.example.homenursingservice.RequestedService;
+import com.example.homenursingservice.SharedPrefManager;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.GeoPoint;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
@@ -69,6 +74,8 @@ public class PatientProfile extends Fragment {
     FirebaseStorage firebaseStorage;
     StorageReference storageReference;
     int total_buy=0,total_buy_animal=0;
+    float total_spent=0;
+    int total_service=0;
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -126,6 +133,7 @@ public class PatientProfile extends Fragment {
         });
 
         get_user_data();
+        get_all_request();;
         return view;
     }
 
@@ -324,6 +332,24 @@ public class PatientProfile extends Fragment {
             public void onComplete(@NonNull Task<Void> task) {
                 get_user_data();
 
+            }
+        });
+    }
+    public void get_all_request(){
+        Query query= db.collection("AllServices").whereEqualTo("user_id", SharedPrefManager.getInstance(getContext()).getUser().user_id);
+        query.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if(task.isComplete()){
+                    QuerySnapshot queryDocumentSnapshots=task.getResult();
+                    for(DocumentSnapshot documentSnapshot:queryDocumentSnapshots){
+                        Map<String,Object> data=documentSnapshot.getData();
+                        total_spent+=Float.parseFloat(data.get("payment").toString());
+                    }
+                    total_service=queryDocumentSnapshots.size();
+                    total_served_tv.setText(total_service+"");
+                    total_earn_tv.setText(total_spent+"");
+                }
             }
         });
     }

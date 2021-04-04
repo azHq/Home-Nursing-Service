@@ -17,6 +17,7 @@ public class ServiceDetails extends AppCompatActivity {
     TextView name_tv,price_tv,details_tv;
     ImageView logoImage;
     Button book_service;
+    String user_type="doctor";
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -30,7 +31,12 @@ public class ServiceDetails extends AppCompatActivity {
         price=getIntent().getStringExtra("price");
         details=getIntent().getStringExtra("details");
         logo=getIntent().getIntExtra("logo",0);
+        user_type=getIntent().getStringExtra("user_type");
+        if(user_type!=null&&user_type.equalsIgnoreCase("doctor")){
+            book_service.setVisibility(View.GONE);
+        }
         logoImage.setImageResource(logo);
+
         book_service.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
